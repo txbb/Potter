@@ -1,0 +1,15 @@
+{
+  "name": "potter",
+  "version": "0.1.0",
+  "description": "A very simple static html page poster.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "potter",
+    "txbb"
+  ],
+  "author": "zhangyang",
+  "license": "MIT"
+}
