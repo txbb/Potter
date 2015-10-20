@@ -1,0 +1,43 @@
+/* CSS declarations go here */
+@white: #fff;
+@main: #4fc1e9;
+@black: #444;
+
+@import "common/btn.import.less";
+@import "welcome.import.less";
+@import "dashboard.import.less";
+
+html {
+    font-size: 10px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    background: #fff;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-size: 1.2rem;
+}
+
+.page {
+    height: 100%;
+    overflow: auto;
+    &.page-home {
+        background: @main url(landing.png) center center no-repeat;
+        background-size: contain;
+    }
+}
