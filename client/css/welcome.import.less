@@ -1,3 +1,8 @@
+.page-home {
+    background: @main url(landing.png) center center no-repeat;
+    background-size: contain;
+}
+
 .welcome-block {
     text-align: center;
     height: 200px;
@@ -16,14 +21,25 @@
         transform: translateY(0);
         transition: 1s ease;
     }
+    & > p {
+        font-size: 1.4rem;
+        color: @white;
+        margin-top: 40px;
+    }
+    a {
+        color: @white;
+    }
+    a.btn {
+        color: #666;
+    }
 }
 
-.logo {
+.logo-wrap {
     color: @white;
     height: 140px;
     width: 320px;
     margin: 0 auto;
-    .title {
+    .logo {
         text-indent: -9999px;
         background: url(logo.svg) center center no-repeat;
         width: 100%;

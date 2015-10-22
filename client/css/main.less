@@ -2,10 +2,10 @@
 @white: #fff;
 @main: #4fc1e9;
 @black: #444;
+@hover: #f5f5f5;
+@active: #eee;
 
-@import "common/btn.import.less";
-@import "welcome.import.less";
-@import "dashboard.import.less";
+@fontFamily: 'Helvetica Neue','Hiragino Sans GB','WenQuanYi Micro Hei','Microsoft Yahei',sans-serif;
 
 html {
     font-size: 10px;
@@ -22,6 +22,7 @@ html, body {
     width: 100%;
     padding: 0;
     margin: 0;
+    color: @black;
 }
 
 h1, h2, h3, h4, h5, h6, p, ul, ol {
@@ -30,14 +31,29 @@ h1, h2, h3, h4, h5, h6, p, ul, ol {
 }
 
 body {
-    font-size: 1.2rem;
+    font: 12px/1.4 normal normal @fontFamily;
+}
+
+a {
+    color: @main;
 }
 
 .page {
     height: 100%;
-    overflow: auto;
-    &.page-home {
-        background: @main url(landing.png) center center no-repeat;
-        background-size: contain;
-    }
+    overflow: hidden;
 }
+
+.logo {
+    text-indent: -9999px;
+    background: url(logo.svg) center center no-repeat;
+    width: 90px;
+    height: 44px;
+}
+
+.ctn {
+    padding: 0 15px;
+}
+
+@import "common/btn.import.less";
+@import "welcome.import.less";
+@import "dashboard.import.less";

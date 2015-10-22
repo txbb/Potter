@@ -1,0 +1,113 @@
+.header {
+    height: 44px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: @main;
+    .logo {
+        display: inline-block;
+    }
+    nav {
+        float: right;
+        ul {
+            list-style: none;
+            li {
+                float: left;
+            }
+            a {
+                color: @white;
+                width: 44px;
+                height: 44px;
+                line-height: 44px;
+                text-align: center;
+                display: block;
+                font-size: 18px;
+                &:hover {
+                    background-color: lighten(@main, 10%);
+                }
+                &:active {
+                    background-color: darken(@main, 10%);
+                }
+            }
+        }
+    }
+}
+
+.workspace {
+    background-color: #fff;
+    min-height: 500px;
+    margin-top: 44px;
+    overflow-y: auto;
+    .left {
+        width: 200px;
+        border-right: 1px solid #e9e9e9;
+        height: 100%;
+        float: left;
+        .nav-tab {
+            overflow: hidden;
+            list-style: none;
+            li {
+                float: left;
+                width: 50%;
+                text-align: center;
+                &:last-child {
+                    a {
+                        border-right: 0;
+                    }
+                }
+            }
+            a {
+                display: block;
+                text-decoration: none;
+                color: @black;
+                height: 30px;
+                line-height: 30px;
+                background-color: #fff;
+                border-bottom: 1px solid #e9e9e9;
+                &:hover {
+                    background-color: @hover;
+                }
+                &:active {
+                    background-color: @active;
+                }
+            }
+            .active {
+                & > a {
+                    border-top: 1px solid #e9e9e9;
+                    border-left: 1px solid #e9e9e9;
+                    border-right: 1px solid #e9e9e9;
+                    border-bottom-color: #fff;
+                    position: relative;
+                    z-index: 1;
+                    background-color: #fff;
+                }
+            }
+        }
+        .tabs {
+            background-color: #fff;
+        }
+    }
+    .right {
+        margin-left: 200px;
+    }
+}
+
+.page-list {
+    list-style: none;
+    margin-top: 10px;
+    li {
+        a {
+            display: block;
+            padding: 10px;
+            color: #666;
+            text-decoration: none;
+            &:hover {
+                background-color: @hover;
+            }
+            &:active {
+                background-color: @active;
+            }
+        }
+    }
+}
