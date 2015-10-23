@@ -1,0 +1,158 @@
+.article {
+    color: gray;
+    font-size: 14px;
+    padding-top: 44px;
+    position: relative;
+    p {
+        margin: 10px 0;
+    }
+    table {
+        font-size: 12px;
+        color: gray;
+        width: 100%;
+        text-align: center;
+        td {
+            margin: 0;
+            padding: 0;
+            line-height: 2;
+            background-color: #fff;
+        }
+        td:first-child {
+            text-align: left;
+            padding-left: 10px;
+        }
+        thead {
+            td {
+                color: black;
+                text-align: center;
+                border-bottom: 1px solid #eee;
+            }
+        }
+        td.green {color: lightgreen;}
+        td.lightgray {color: lightgray;}
+        td.green2 {color: #9bce2d;}
+        td.red {color: #fd6e41}
+        tbody {
+            tr:nth-child(odd) {
+                td {background-color: #F6F9FF;}
+            }
+        }
+        td.tr {
+            text-align: right;
+            padding-right: 1rem;
+        }
+    }
+    .section {
+        margin-bottom: 10px;
+        background-color: #FFF;
+        border-bottom: 1px solid #E9E9E9;
+        border-top: 1px solid #E9E9E9;
+        & > .title {
+            padding: 6px 10px;
+            margin: 0;
+            font-weight: normal;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+        & > .body {
+            color: gray;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 10px;
+            margin: 0;
+        }
+    }
+    .qa-item {
+        margin: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e9e9e9;
+        &:last-child{
+            border: none;
+        }
+        .title {
+            color: #333;
+            font-size: 16px;
+            margin: 0 0 8px 0;
+            padding-left: 22px;
+            background: url(article/img/qa-q.png) left top no-repeat;
+            background-size: 21px;
+            line-height: 21px;
+        }
+        .body {
+            color: #888;
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 0;
+            padding-left: 22px;
+            background: url(article/img/qa-a.png) left top no-repeat;
+            background-size: 21px;
+            line-height: 21px;
+        }
+    }
+    .indexed {
+        margin: 10px;
+        .ol > div {
+            padding-left: 22px;
+            margin-bottom: 4px;
+            position: relative;
+            &:before {
+                content: "*";
+                width: 14px;
+                height: 14px;
+                line-height: 14px;
+                font-size: 12px;
+                text-align: center;
+                color: #fff;
+                border-radius: 50%;
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                background-color: #ccc;
+            }
+        }
+        // .ol > div:nth-child(1) {
+        //     &:before {
+        //         content: "1";
+        //         background-color: #cf8ef8;
+        //     }
+        // }
+        .indexdLoop(8);
+    }
+    .ico-tick {
+        display: inline-block;
+        background: url(article/img/tick.png) center center no-repeat;
+        width: 11px;
+        height: 11px;
+        background-size: 11px;
+    }
+    .article-header {
+        background-color: #ccc;
+        height: 44px;
+        position: absolute;
+        width: 100%;
+        line-height: 44px;
+        color: #fff;
+        text-align: center;
+        font-size: 16px;
+        top: 0;
+        left: 0;
+    }
+}
+
+@b-main: #1eabc9;
+@b-secondary: #7cd1e0;
+@c-main: #77d2c5;
+@c-secondary: #9bce2d;
+
+@indexcolors: #cf8ef8, #6dabff, #19c6df, #4cd59f, #8cd41d, #ddd000, #f0a301, #f77e2d;
+
+.indexdLoop(@counter) when (@counter > 0) {
+    .indexdLoop((@counter - 1));
+    .ol > div:nth-child(@{counter}) {
+        &:before {
+            content: `@{counter}+''`;
+            background-color: extract(@indexcolors, @counter);
+        }
+    }
+}
