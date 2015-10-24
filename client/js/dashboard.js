@@ -3,32 +3,35 @@
 var domWorkspace;
 var domEditor;
 var domArticleContent;
+var domEditArea;
 var optBtns;
+
+// 暂存上一次 focus 的区块
+var lastFocusDom = null;
 
 function init() {
     onScreenSizeChange();
-    disableBtns(['table', 'color', 'left', 'middle', 'right', 'img', 'links']);
-    domEditor.innerHTML = '<div class="article"><div class="article-header"> \
+    disableBtns(['table', 'color', 'textalign', 'img', 'link']);
+    domEditor.innerHTML = '<div class="article-header"> \
         <div contenteditable>在此处编辑页面标题</div> \
         </div> \
         <div class="article-content"> \
-        </div> \
-    </div>';
-    domArticleContent = domEditor.firstChild.children[1];
+        </div>';
+    domArticleContent = domEditor.children[1];
     eventBind();
     fetchData();
 }
 
 function fetchData() {
     var back = [];
-    for (var key in window.data.themes) {
+    var themes = window.data.themes;
+    for (var key in themes) {
         back.push(window.data.themes[key]);
     }
-    Session.set('themes', back);
-
-    Session.set('files', window.data.files);
-
-    Session.set('activeTab', 0);
+    Session.setDefault('themesMap', themes);
+    Session.setDefault('themes', back);
+    Session.setDefault('files', window.data.files);
+    Session.setDefault('currentThemeKey', back[0].key);
 }
 
 function onScreenSizeChange() {
@@ -45,24 +48,33 @@ function eventBind() {
     ctn.on('click', 'section', function(e) {
         var _this = $(this);
         if (e.target.nodeName.toUpperCase() === 'SECTION') {
-            if (confirm('确定删除此区块么?')) {
-                _this.remove();
-                disableBtns(['table']);
-            }
+            Txbb.Pop('modal', {
+                title : '提示',
+                body : '确认删除此区块么?',
+                ok: function(){
+                    _this.remove();
+                    disableBtns(['table', 'color', 'textalign', 'img', 'link']);
+                },
+                cancel: function(){}
+            });
         }
     }).on('focus', 'section', function(e) {
         var _this = $(this);
         var tar = $(e.target);
         if (tar.parent().hasClass('j-section-body')) {
-            enableBtns(['table']);
+            lastFocusDom = tar[0];
+            enableBtns(['table', 'color', 'textalign', 'img', 'link']);
         } else {
-            disableBtns(['table']);
+            disableBtns(['table', 'color', 'textalign', 'img', 'link']);
         }
     });
+
+    var win = $(window);
+    win.on('resize', onScreenSizeChange);
 }
 
 // 执行具体的点按工具按钮操作
-function handleOperation(optName) {
+function handleOperation(tar, optName) {
     switch(optName) {
         case 'section':
             insertNewSection();
@@ -76,9 +88,55 @@ function handleOperation(optName) {
         case 'index':
             insertIndexedSection();
             break;
-        default:
-            alert(optName + ' 操作尚未开发');
+        case 'subpanel':
+            tar.parentNode.classList.toggle('active');
             break;
+        case 'setcolor':
+            setSelectionClass(tar.dataset.role);
+            break;
+        case 'setlink':
+            var p = tar.parentNode;
+            var toggleWrap = p.parentNode.parentNode;
+            var name = p.children[0].value;
+            var href = p.children[1].value;
+            if (name && href) {
+                setLink(name, href);
+                p.children[0].value = '';
+                p.children[1].value = '';
+                toggleWrap.classList.remove('active');
+            } else {
+                Txbb.Pop('toast', '请输入合法字符');
+            }
+            break;
+        default:
+            Txbb.Pop('toast', optName + ' 操作尚未开发');
+            break;
+    }
+}
+
+function setSelectionClass(className) {
+    var selection = getSelection();
+    if (selection.type != 'Range') {
+        Txbb.Pop('toast', '请选中文本');
+    } else {
+        var text = selection.focusNode.parentNode.innerHTML;
+        var startPos = selection.baseOffset;
+        var endPos = selection.extentOffset;
+        if (selection.baseOffset > selection.extentOffset) {
+            startPos = selection.extentOffset;
+            endPos = selection.baseOffset;
+        }
+        var targetText = text.slice(startPos, endPos);
+        text = text.substring(0, startPos) + '<span class="'+ className +'">'+ targetText +'</span>' + text.substring(endPos);
+        selection.focusNode.parentNode.innerHTML = text;
+    }
+}
+
+function setLink(linkName, linkHref) {
+    if (lastFocusDom) {
+        console.log(lastFocusDom, lastFocusDom.innerHTML);
+        lastFocusDom.innerHTML = lastFocusDom.innerHTML + '<a href="'+ linkHref +'">' + linkName + '</a>';
+        console.log(lastFocusDom.innerHTML);
     }
 }
 
@@ -178,30 +236,36 @@ function insertIndexedSection() {
     domArticleContent.innerHTML = domArticleContent.innerHTML + tmpl;
 }
 
-function setColor() {
-    
-}
-
 Template.dashboard.onRendered(function(){
     domWorkspace = this.find('.workspace');
-    domEditor = this.find('.editor');
+    domEditor = this.find('.editor > .article');
     optBtns = this.findAll('.toolbar .item');
+    domEditArea = this.find('.editarea');
     init();
 });
 
 Template.dashboard.events({
     'mousedown .toolbar .j-opt' : function(event, template) {
         var target = event.target;
-        if (!target.classList.contains('disabled')) {
-            handleOperation(target.dataset.type);
+        if ((target.dataset.type === 'subpanel' && !target.parentNode.classList.contains('disabled')) ||
+            (!target.classList.contains('disabled') && target.dataset.type !== 'subpanel')) {
+            handleOperation(target, target.dataset.type);
         }
         event.preventDefault();
+        event.stopPropagation();
     },
     'click .nav-tabs li' : function(event, template) {
         var target = event.target;
-        console.log(target.dataset.index);
         var index = parseInt(target.dataset.index);
         Session.set('activeTab', index);
+    },
+    'change #ThemeSelect' : function(event, template) {
+        var target = event.target;
+        var themeKey = target.options[target.selectedIndex].value;
+        Session.set('currentThemeKey', themeKey);
+    },
+    'click #BtnCreate' : function(event) {
+        domEditArea.classList.add('on');
     }
 });
 
@@ -218,5 +282,18 @@ Template.dashboard.helpers({
     },
     activeTab: function(){
         return Session.get('activeTab');
+    },
+    currentTheme: function(){
+        var themesMap = Session.get('themesMap');
+        var key = Session.get('currentThemeKey');
+        if (key === 'C') {
+            Session.set('activeTab', 0);
+        } else if (key === 'B'){
+            Session.set('activeTab', 1);
+        }
+        if (themesMap && key) {
+            return themesMap[key];
+        }
+        return {};
     }
 });

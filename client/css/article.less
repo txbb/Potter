@@ -137,13 +137,53 @@
         font-size: 16px;
         top: 0;
         left: 0;
+        transition: all .5s ease;
+    }
+
+    &.theme-C {
+        .article-header {
+            background-color: @c-main;
+        }
+        .section > .title {
+            color: @c-secondary;
+        }
+        .secondary {
+            color: @c-secondary;
+        }
+        .success {
+            color: @c-success;
+        }
+        .danger {
+            color: @c-danger;
+        }
+    }
+    &.theme-B {
+        .article-header {
+            background-color: @b-main;
+        }
+        .section > .title {
+            color: @b-secondary;
+        }
+        .secondary {
+            color: @b-secondary;
+        }
+        .success {
+            color: @b-success;
+        }
+        .danger {
+            color: @b-danger;
+        }
     }
 }
 
 @b-main: #1eabc9;
 @b-secondary: #7cd1e0;
+@b-danger: #fd6e41;
+@b-success: #9bce2d;
 @c-main: #77d2c5;
 @c-secondary: #9bce2d;
+@c-danger: #fd6e41;
+@c-success: #9bce2d;
 
 @indexcolors: #cf8ef8, #6dabff, #19c6df, #4cd59f, #8cd41d, #ddd000, #f0a301, #f77e2d;
 

@@ -4,7 +4,7 @@
             <div class="ctn">
                 <h1 class="logo">Potter</h1>
                 <nav>
-                    <ul><li><a href="javascript:;"><i class="fa fa-plus"></i></a></li></ul>
+                    <ul><li><a id="BtnCreate" href="javascript:;"><i class="fa fa-plus"></i></a></li></ul>
                 </nav>
             </div>
         </header>
@@ -42,12 +42,11 @@
                 </div>
             </div>
             <div class="right">
-                <div class="editarea">
+                <div class="editarea fade">
                     <div class="titlebar">
                         <span class="item">
                             主题：
-                            <select name="" id="">
-                                <option value="default">请选择</option>
+                            <select id="ThemeSelect">
                                 {{#each themes}}
                                 <option value="{{key}}">{{name}}</option>
                                 {{/each}}
@@ -60,25 +59,16 @@
                     </div>
 
                     <div class="toolbar">
-                        <!-- Todo:
-                        <ul>
-                            <li>插入区块：章节、表格、问答、序号文章</li>
-                            <li>字体颜色</li>
-                            <li>居中、左、右</li>
-                            <li>图片上传（仅支持在section content中插入）</li>
-                            <li>自定义图标插入，仅支持表格、section content</li>
-                            <li>插入链接</li>
-                        </ul> -->
                         <div class="group">
                             <h2 class="title">插入元素</h2>
                             <div class="item j-opt" data-type="section">章节</div>
-                            <div class="item j-opt" data-type="table">
-                                表格
+                            <div class="item" data-type="table">
+                                <div class="j-opt" data-type="subpanel">表格</div>
                                 <div class="subpanel">
                                     <div class="tables">
                                         {{#each tableConfig.rowNumber}}
                                         <div class="row">
-                                            {{#each tableConfig.cellNumber}}<div class="cell j-opt" data-type="table"></div>{{/each}}
+                                            {{#each tableConfig.cellNumber}}<div class="cell j-opt" data-type="settable"></div>{{/each}}
                                         </div>
                                         {{/each}}
                                     </div>
@@ -90,36 +80,37 @@
 
                         <div class="group">
                             <h2 class="title">文本编辑</h2>
-                            <div class="item j-opt" data-type="color">
-                                颜色
+                            <div class="item" data-type="color">
+                                <div class="j-opt" data-type="subpanel">颜色</div>
                                 <div class="subpanel">
                                     <div class="colors">
-                                        <div class="color-item j-opt" data-type="color">#fff</div>
-                                        <div class="color-item j-opt" data-type="color">#fff</div>
-                                        <div class="color-item j-opt" data-type="color">#fff</div>
+                                        {{#with currentTheme}}
+                                        <div class="color-item j-opt" data-type="setcolor" data-role="secondary" style="background-color:{{secondary}}"></div>
+                                        <div class="color-item j-opt" data-type="setcolor" data-role="danger" style="background-color:{{danger}}"></div>
+                                        <div class="color-item j-opt" data-type="setcolor" data-role="success" style="background-color:{{success}}"></div>
+                                        {{/with}}
                                     </div>
                                 </div>
                             </div>
-                            <div class="item j-opt" data-type="left">居左</div>
-                            <div class="item j-opt" data-type="middle">居中</div>
-                            <div class="item j-opt" data-type="right">居右</div>
+                            <div class="item j-opt" data-type="textalign" data-value="left">居左</div>
+                            <div class="item j-opt" data-type="textalign" data-value="center">居中</div>
+                            <div class="item j-opt" data-type="textalign" data-value="right">居右</div>
                             <div class="item j-opt" data-type="img">图片</div>
-                            <div class="item j-opt" data-type="links">
-                                链接
+                            <div class="item" data-type="link">
+                                <div class="j-opt" data-type="subpanel">链接</div>
                                 <div class="subpanel">
-                                    <form class="form-links">
+                                    <div class="form-links">
                                         <input type="text" placeholder="输入链接名称">
                                         <input type="text" placeholder="输入链接地址">
-                                        <button class="j-opt" data-type="links">提交</button>
-                                    </form>
+                                        <button class="j-opt" data-type="setlink">提交</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="editor">
-
-                        <div class="article">
+                        <div class="article theme-{{currentTheme.key}}">
                             <!-- <div class="article-header">
                                 <div contenteditable>在此处编辑页面标题</div>
                             </div>
@@ -189,27 +180,26 @@
                                 </section> -->
                             <!-- </div> -->
                         </div>
-
                     </div>
+                </div>
 
-                    <div class="todo">
-                        <h1>Potter</h1>
-                        解决产品编写并部署说明页的需求，解放前端开发及设计师生产力，还有静态页的维护成本。<br>
-                        <br>
-                        当前，帮帮产品的每次迭代中，均会有一些说明页的编写需求，诸如各种问答页、表格说明页、联系我们页面等，Potter 致力于解决一个问题，那就是产品经理可以直接编辑想要的文档页并以静态HTML文件的形式发布并且这些文档页是遵循团队视觉规范的，这样就解放了设计师和前端开发的生产力，同时也降低了说明页的维护成本
-                        <br><br>
+                <div class="todo">
+                    <h1>Potter</h1>
+                    解决产品编写并部署说明页的需求，解放前端开发及设计师生产力，还有静态页的维护成本。<br>
+                    <br>
+                    当前，帮帮产品的每次迭代中，均会有一些说明页的编写需求，诸如各种问答页、表格说明页、联系我们页面等，Potter 致力于解决一个问题，那就是产品经理可以直接编辑想要的文档页并以静态HTML文件的形式发布并且这些文档页是遵循团队视觉规范的，这样就解放了设计师和前端开发的生产力，同时也降低了说明页的维护成本
+                    <br><br>
 
-                        功能需求<br>
-                        <ol>
-                            <li>一个所见即所得编辑器</li>
-                            <li>主题风格定制（C端视觉和B端视觉）</li>
-                            <li>插入QA块、表格、章节、链接，不支持自定义字体大小，仅支持特定的几种颜色</li>
-                            <li>生成静态HTML文件，并发布至特定的工作路径（一般是线上的文件服务器）</li>
-                            <li>修改历史发布过的文件</li>
-                            <li>草稿功能</li>
-                            <li>图片上传及插入功能</li>
-                        </ol>
-                    </div>
+                    功能需求<br>
+                    <ol>
+                        <li>一个所见即所得编辑器</li>
+                        <li>主题风格定制（C端视觉和B端视觉）</li>
+                        <li>插入QA块、表格、章节、链接，不支持自定义字体大小，仅支持特定的几种颜色</li>
+                        <li>生成静态HTML文件，并发布至特定的工作路径（一般是线上的文件服务器）</li>
+                        <li>修改历史发布过的文件</li>
+                        <li>草稿功能</li>
+                        <li>图片上传及插入功能</li>
+                    </ol>
                 </div>
             </div>
         </div>

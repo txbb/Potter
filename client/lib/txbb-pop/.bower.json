@@ -1,0 +1,38 @@
+{
+  "name": "txbb-pop",
+  "main": "txbb-pop.js",
+  "authors": [
+    "zhangyang <px.zhangyang@gmail.com>"
+  ],
+  "description": "同学帮帮弹出层类组件",
+  "moduleType": [
+    "amd",
+    "globals"
+  ],
+  "keywords": [
+    "txbb",
+    "pop"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "LICENSE",
+    ".gitignore"
+  ],
+  "homepage": "https://github.com/txbb/txbb-pop",
+  "version": "0.2.2",
+  "_release": "0.2.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.2.2",
+    "commit": "d420a88ec573631562ac726d0b301b2688527995"
+  },
+  "_source": "git://github.com/txbb/txbb-pop.git",
+  "_target": "~0.2.2",
+  "_originalSource": "txbb-pop",
+  "_direct": true
+}
