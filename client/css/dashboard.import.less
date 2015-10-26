@@ -249,9 +249,33 @@
                 display: inline-block;
                 background-color: #eee;
                 margin: 0 1px;
+                // &:hover {
+                //     background-color: #ccc;
+                // }
+                &.active {
+                    background-color: #ccc;
+                }
             }
             .row {
                 width: 100px;
+            }
+        }
+        .icons {
+            line-height: 1;
+            margin: -10px;
+            .ico-wrap {
+                padding: 10px;
+                background-size: 11px;
+                width: 11px;
+                height: 11px;
+                box-sizing: content-box;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+        }
+        .upload {
+            input[type=file] {
+                width: 150px;
             }
         }
     }
@@ -265,7 +289,6 @@
         box-shadow: 0 0 10px rgba(0,0,0,.2);
     }
 }
-
 .article {
     section {
         border: 1px solid transparent;

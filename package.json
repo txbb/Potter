@@ -11,5 +11,8 @@
     "txbb"
   ],
   "author": "zhangyang",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "qiniu": "^6.1.8"
+  }
 }

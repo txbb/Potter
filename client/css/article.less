@@ -3,9 +3,7 @@
     font-size: 14px;
     padding-top: 44px;
     position: relative;
-    p {
-        margin: 10px 0;
-    }
+    p {margin: 10px 0;}
     table {
         font-size: 12px;
         color: gray;
@@ -42,6 +40,7 @@
             padding-right: 1rem;
         }
     }
+    a {text-decoration: none;}
     .section {
         margin-bottom: 10px;
         background-color: #FFF;
@@ -119,13 +118,6 @@
         // }
         .indexdLoop(8);
     }
-    .ico-tick {
-        display: inline-block;
-        background: url(article/img/tick.png) center center no-repeat;
-        width: 11px;
-        height: 11px;
-        background-size: 11px;
-    }
     .article-header {
         background-color: #ccc;
         height: 44px;
@@ -140,7 +132,18 @@
         transition: all .5s ease;
     }
 
+    img.icon {
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        vertical-align: middle;
+        margin-top: -2px;
+    }
+
     &.theme-C {
+        a {
+            color: @c-main;
+        }
         .article-header {
             background-color: @c-main;
         }
@@ -158,6 +161,9 @@
         }
     }
     &.theme-B {
+        a {
+            color: @b-main;
+        }
         .article-header {
             background-color: @b-main;
         }

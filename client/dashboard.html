@@ -65,10 +65,10 @@
                             <div class="item" data-type="table">
                                 <div class="j-opt" data-type="subpanel">表格</div>
                                 <div class="subpanel">
-                                    <div class="tables">
+                                    <div id="Table" class="tables">
                                         {{#each tableConfig.rowNumber}}
-                                        <div class="row">
-                                            {{#each tableConfig.cellNumber}}<div class="cell j-opt" data-type="settable"></div>{{/each}}
+                                        <div class="row" data-value="{{this}}">
+                                            {{#each tableConfig.cellNumber}}<div class="cell" data-value="{{this}}"></div>{{/each}}
                                         </div>
                                         {{/each}}
                                     </div>
@@ -95,7 +95,23 @@
                             <div class="item j-opt" data-type="textalign" data-value="left">居左</div>
                             <div class="item j-opt" data-type="textalign" data-value="center">居中</div>
                             <div class="item j-opt" data-type="textalign" data-value="right">居右</div>
-                            <div class="item j-opt" data-type="img">图片</div>
+                            <div class="item" data-type="img">
+                                <div class="j-opt" data-type="subpanel">图片</div>
+                                <div class="subpanel">
+                                    <div class="upload">
+                                        <input type="file" />
+                                        <button class="j-opt" data-type="upload">上传</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item" data-type="icon">
+                                <div class="j-opt" data-type="subpanel">图标</div>
+                                <div class="subpanel">
+                                    <div class="icons">
+                                        <div class="j-opt ico-wrap" data-type="seticon" data-value="article/img/tick.png" style="background-image:url(article/img/tick.png)"></div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="item" data-type="link">
                                 <div class="j-opt" data-type="subpanel">链接</div>
                                 <div class="subpanel">
@@ -111,74 +127,7 @@
 
                     <div class="editor">
                         <div class="article theme-{{currentTheme.key}}">
-                            <!-- <div class="article-header">
-                                <div contenteditable>在此处编辑页面标题</div>
-                            </div>
-                            <div class="article-content"> -->
-                                <!-- <section class="section">
-                                    <h1 class="title"><div contenteditable>在此处编辑区块标题</div></h1>
-                                    <div class="body">
-                                        <div contenteditable>
-                                            <div>在此处编辑区块内容</div>
-                                        </div>
-                                    </div>
-                                </section>
-                                <section class="section">
-                                    <h1 class="title"><div contenteditable>在此处编辑区块标题</div></h1>
-                                    <table cellPadding="0" cellSpacing="0">
-                                        <thead>
-                                            <tr>
-                                                <td><div contenteditable>商家信用</div></td>
-                                                <td><div contenteditable>普通商户</div></td>
-                                                <td><div contenteditable>真实商户</div></td>
-                                                <td><div contenteditable>诚信商户</div></td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><div contenteditable>用户端</div></td>
-                                                <td><div contenteditable>不显示</div></td>
-                                                <td><div contenteditable>显示</div></td>
-                                                <td><div contenteditable>显示</div></td>
-                                            </tr>
-                                            <tr>
-                                                <td><div contenteditable>用户端</div></td>
-                                                <td><div contenteditable>不显示</div></td>
-                                                <td><div contenteditable>显示</div></td>
-                                                <td><div contenteditable><i class="ico-tick"></i></div></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </section>
-                                <section class="indexed">
-                                    <div class="ol" contenteditable>
-                                        <div>在这里编写内容</div>
-                                        <div>在这里编写内容</div>
-                                        <div>在这里编写内容</div>
-                                        <div>在这里编写内容</div>
-                                        <div>在这里编写内容</div>
-                                        <div>在这里编写内容</div>
-                                        <div>在这里编写内容</div>
-                                        <div>在这里编写内容</div>
-                                    </div>
-                                </section>
-                                <section class="qa-item">
-                                    <div class="title">
-                                        <div contenteditable>在这里写问题</div>
-                                    </div>
-                                    <div class="body">
-                                        <div contenteditable>在这里写答案</div>
-                                    </div>
-                                </section>
-                                <section class="qa-item">
-                                    <div class="title">
-                                        <div contenteditable>在这里写问题</div>
-                                    </div>
-                                    <div class="body">
-                                        <div contenteditable>在这里写答案</div>
-                                    </div>
-                                </section> -->
-                            <!-- </div> -->
+
                         </div>
                     </div>
                 </div>
