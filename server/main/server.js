@@ -1,9 +1,7 @@
 /*jshint esnext:true*/
 
 // 测试号信息
-const AK = 'QtwwlJQQAU0HeGguZ10bsEfSIa1D_KKh_WNC0m2w';
-const SK = '7anboy69gTxYFZuqHGO_AnaXsXQEk1lWaFZP1Jy7';
-const BUCKET = 'zysmedia';
+
 // TODO: 生产号信息
 
 // base64encode, utf16to8, CryptoJS.HmacSHA1, safe64
@@ -75,7 +73,7 @@ function getUptDeadline() {
 
 let qiniu = Npm.require('qiniu');
 
-console.log(qiniu);
+
 
 Meteor.startup(function () {
     // 生成七牛上传Token
