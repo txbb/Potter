@@ -9,35 +9,34 @@ var optBtns;
 // 暂存上一次 focus 的区块
 var lastFocusDom = null;
 
+// 初始化
 function init() {
     onScreenSizeChange();
     disableBtns(['table', 'color', 'textalign', 'img', 'link', 'icon']);
-    domEditor.innerHTML = '<div class="article-header"> \
+    Meteor.call('getThemes', function(err, themes) {
+        Session.set('themes', themes);
+    });
+    getFiles();
+}
+
+// 新建页面
+function newPage() {
+    domEditor.children[0].innerHTML = '<div class="article-header"> \
         <div contenteditable>在此处编辑页面标题</div> \
         </div> \
         <div class="article-content"> \
         </div>';
-    domArticleContent = domEditor.children[1];
+    domArticleContent = domEditor.children[0].children[1];
+    domArticleContent.style.height = parseInt(domArticleContent.parentNode.offsetHeight - domArticleContent.parentNode.children[0].offsetHeight) + 'px';
     eventBind();
-    fetchData();
 }
 
-function fetchData() {
-    var back = [];
-    var themes = window.data.themes;
-    for (var key in themes) {
-        back.push(window.data.themes[key]);
-    }
-    Session.setDefault('themesMap', themes);
-    Session.setDefault('themes', back);
-    Session.setDefault('files', window.data.files);
-    Session.setDefault('currentThemeKey', back[0].key);
-}
-
+// 屏幕大小变化事件
 function onScreenSizeChange() {
     domWorkspace.style.height = parseInt(window.innerHeight - 44) + 'px';
 }
 
+// 获得当前选择的对象
 function getSelection() {
     return window.getSelection();
 }
@@ -104,9 +103,7 @@ function eventBind() {
         var p = tar.parent();
         var rowNo = p.data('value');
         var cellNo = tar.data('value');
-        console.log('mouseover',tar);
         highlightCell(rowNo, cellNo);
-        // tar.addClass('active');
     }).on('mousedown', function(e){
         var tar = $(e.target);
         var p = tar.parent();
@@ -156,11 +153,14 @@ function handleOperation(tar, optName) {
             setTextAlign(tar.dataset.value);
             break;
         case 'seticon':
-            setIcon(tar.dataset.value);
+            insertImage(tar.dataset.value, 'icon');
             break;
         case 'upload':
-            var files = $(tar).prev('input')[0].files;
+            var input = $(tar).prev('input');
+            var files = input[0].files;
             uploadImage(files);
+            input.val('');
+            $(tar).parent().parent().parent().removeClass('active');
             break;
         default:
             Txbb.Pop('toast', optName + ' 操作尚未开发');
@@ -168,27 +168,30 @@ function handleOperation(tar, optName) {
     }
 }
 
-function setIcon(src) {
+// 插入图片、图标
+function insertImage(src, className) {
     var selection = getSelection();
     if (selection.type != 'Caret') {
-        Txbb.Pop('toast', '请选择插入图标的位置');
+        Txbb.Pop('toast', '请选择插入位置');
     } else {
         var focusNode = selection.focusNode;
         var anchorOffset = 0;
         var value = '';
         var parentNode = null;
+        var imgText = '<img class="'+ (className ? className : 'image') +'" src="'+src+'"/>';
         if (focusNode.nodeType === 3) {
             anchorOffset = selection.anchorOffset;
             parentNode = focusNode.parentNode;
-            value = parentNode.innerHTML.substring(0, anchorOffset) + '<img class="icon" src="'+src+'"/>' + parentNode.innerHTML.substring(anchorOffset, parentNode.innerHTML.length);
+            value = parentNode.innerHTML.substring(0, anchorOffset) + imgText + parentNode.innerHTML.substring(anchorOffset, parentNode.innerHTML.length);
         } else if (focusNode.nodeType === 1) {
             parentNode = focusNode;
-            value = '<img class="icon" src="'+src+'"/>';
+            value = imgText;
         }
         parentNode.innerHTML = value;
     }
 }
 
+// 设置文本颜色
 function setSelectionClass(className) {
     var selection = getSelection();
     if (selection.type != 'Range') {
@@ -207,12 +210,14 @@ function setSelectionClass(className) {
     }
 }
 
+// 添加链接
 function setLink(linkName, linkHref) {
     if (lastFocusDom) {
         lastFocusDom.innerHTML = lastFocusDom.innerHTML + '<a href="'+ linkHref +'">' + linkName + '</a>';
     }
 }
 
+// 设置文本位置
 function setTextAlign(value) {
     var selection = getSelection();
     var node = selection.focusNode;
@@ -223,6 +228,7 @@ function setTextAlign(value) {
     }
 }
 
+// 禁用操作
 function disableBtns(optNameArr) {
     optBtns.forEach(function(elem) {
         if (optNameArr.indexOf(elem.dataset.type) > -1) {
@@ -232,6 +238,7 @@ function disableBtns(optNameArr) {
     });
 }
 
+// 启用操作
 function enableBtns(optNameArr) {
     optBtns.forEach(function(elem) {
         if (optNameArr.indexOf(elem.dataset.type) > -1) {
@@ -241,6 +248,7 @@ function enableBtns(optNameArr) {
     });
 }
 
+// 获得node的父级可编辑区
 function getParentEditable(dom) {
     if (dom.hasAttribute && dom.hasAttribute('contenteditable')) {
         return dom;
@@ -253,11 +261,12 @@ function getParentEditable(dom) {
     }
 }
 
+// 插入新章节
 function insertNewSection() {
     var tmpl = '<section class="section"> \
-        <h1 class="title"><div contenteditable>在此处编辑区块标题</div></h1> \
+        <h1 class="title"><div contenteditable class="j-ctn">在此处编辑区块标题</div></h1> \
         <div class="body j-section-body"> \
-            <div contenteditable> \
+            <div contenteditable class="j-ctn"> \
                 <div>在此处编辑区块内容</div> \
             </div> \
         </div> \
@@ -265,6 +274,7 @@ function insertNewSection() {
     domArticleContent.innerHTML = domArticleContent.innerHTML + tmpl;
 }
 
+// 插入表格
 function insertTable(rowNo, cellNo) {
     var tmpl = '<table cellPadding="0" cellSpacing="0"> \
         <thead> \
@@ -277,7 +287,7 @@ function insertTable(rowNo, cellNo) {
 
     var theads = '<tr>';
     for (var c=1; c<= cellNo; c++) {
-        theads += '<td><div contenteditable>标题</div></td>';
+        theads += '<td><div contenteditable class="j-ctn">标题</div></td>';
     }
     theads += '</tr>';
 
@@ -285,7 +295,7 @@ function insertTable(rowNo, cellNo) {
     for (var r=2; r<=rowNo; r++) {
         tbody += '<tr>';
         for (c=1; c<= cellNo; c++) {
-            tbody += '<td><div contenteditable>内容</div></td>';
+            tbody += '<td><div contenteditable class="j-ctn">内容</div></td>';
         }
         tbody += '</tr>';
     }
@@ -301,21 +311,23 @@ function insertTable(rowNo, cellNo) {
     parent.innerHTML = parent.innerHTML + tmpl;
 }
 
+// 插入问答
 function insertQa() {
     var tmpl = '<section class="qa-item"> \
         <div class="title"> \
-            <div contenteditable>在这里写问题</div> \
+            <div contenteditable class="j-ctn">在这里写问题</div> \
         </div> \
         <div class="body j-text-body"> \
-            <div contenteditable>在这里写答案</div> \
+            <div contenteditable class="j-ctn">在这里写答案</div> \
         </div> \
     </section>';
     domArticleContent.innerHTML = domArticleContent.innerHTML + tmpl;
 }
 
+// 插入序列
 function insertIndexedSection() {
     var tmpl = '<section class="indexed"> \
-        <div class="ol j-text-body" contenteditable> \
+        <div class="ol j-text-body j-ctn" contenteditable> \
             <div>在这里编写内容</div> \
             <div>在这里编写内容</div> \
             <div>在这里编写内容</div> \
@@ -324,37 +336,28 @@ function insertIndexedSection() {
     domArticleContent.innerHTML = domArticleContent.innerHTML + tmpl;
 }
 
-function autoSave() {
-    // TODO: 自动保存
-}
-
-function loadSave() {
-    // TODO: 加载自动保存区的内容
-}
-
-function preView() {
-    // TODO: 预览
-}
-
-function post() {
-    // TODO: 提交
-}
-
+// 上传图片
 function uploadImage(files) {
-    // 上传图片
     if (!files.length) {
         return;
     }
     var file = files[0];
     Meteor.call('getUptToken', function(err, token) {
         if (!err) {
+            Potter.loading('正在上传图片');
             var form = new FormData();
-            form.append('token', 'iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV:ok3U4MYW6GTOPq7x4itxwOl2P-Q=:eyJzY29wZSI6InF0ZXN0YnVja2V0IiwiZGVhZGxpbmUiOjE0NDU4NjMzNTR9');
+            form.append('token', token);
             form.append('file', file);
-            // form.append('key', 'zysmedia');
             var req = new XMLHttpRequest();
             req.onreadystatechange = function(){
-                console.log('statechange', req);
+                if (req.status === 200 && req.readyState === 4) {
+                    var resp = JSON.parse(req.responseText);
+                    insertImage(resp.domain + resp.key);
+                    Potter.loadingHide();
+                } else if (req.status !== 200 && req.readyState === 4) {
+                    Txbb.Pop('toast', req.responseText);
+                    Potter.loadingHide();
+                }
             };
             req.open('POST', 'http://upload.qiniu.com/');
             req.send(form);
@@ -362,9 +365,77 @@ function uploadImage(files) {
     });
 }
 
+// 发布文章
+function post() {
+    var theme = getCurrentTheme();
+    var $editor = $(domEditor);
+    var title = $editor.find('.article-header').text().trim();
+    var div = document.createElement('div');
+    div.innerHTML = $editor.html();
+    $(div).find('div').removeAttr('contenteditable');
+    Potter.loading('正在发布页面');
+    Meteor.call('post', div.innerHTML, title, theme.id, function(err, resp) {
+        if (resp.code) {
+            Txbb.Pop('toast', resp.msg);
+        } else {
+            Txbb.Pop('modal', {
+                title : '提示',
+                body: '上传成功!<br/><a href="'+resp.domain + resp.key + '">'+resp.domain + resp.key + '</a>',
+                ok: getFiles,
+                dontCloseClickBack: true
+            });
+            newPage();
+        }
+        Potter.loadingHide();
+    });
+}
+
+// 获得历史上传记录
+function getFiles() {
+    Potter.loading('正在获取历史发布');
+    Meteor.call('getFiles', function(err, resp){
+        if (resp.error) {
+            Txbb.Pop('toast', resp.error);
+        } else {
+            Session.set('files', resp);
+        }
+        Potter.loadingHide();
+    });
+}
+
+// TODO: 自动保存
+function autoSave() {
+
+}
+
+// TODO: 加载自动保存区的内容
+function loadSave() {
+
+}
+
+// TODO: 预览
+function preView() {
+
+}
+
+function getCurrentTheme() {
+    var themes = Session.get('themes');
+    var currentThemeId = Session.get('currentThemeId');
+    if (themes) {
+        if (!currentThemeId) currentThemeId = themes[0].id;
+        for (var idx in themes) {
+            if (themes[idx].id === currentThemeId) {
+                return themes[idx];
+            }
+        }
+    } else {
+        return {};
+    }
+}
+
 Template.dashboard.onRendered(function(){
     domWorkspace = this.find('.workspace');
-    domEditor = this.find('.editor > .article');
+    domEditor = this.find('.editor');
     optBtns = this.findAll('.toolbar .item');
     domEditArea = this.find('.editarea');
     init();
@@ -387,11 +458,26 @@ Template.dashboard.events({
     },
     'change #ThemeSelect' : function(event, template) {
         var target = event.target;
-        var themeKey = target.options[target.selectedIndex].value;
-        Session.set('currentThemeKey', themeKey);
+        var themeId = target.options[target.selectedIndex].value;
+        Session.set('currentThemeId', themeId);
     },
     'click #BtnCreate' : function(event) {
         domEditArea.classList.add('on');
+        newPage();
+    },
+    'click #BtnSend' : function(e){
+        e.preventDefault();
+
+        Txbb.Pop('modal', {
+            title: '提示',
+            body: '您确认发布此页面么？',
+            ok: post,
+            cancel: function(){}
+        });
+    },
+    'click .tree-view .trigger': function(e) {
+        e.preventDefault();
+        e.target.parentNode.classList.toggle('on');
     }
 });
 
@@ -403,23 +489,23 @@ Template.dashboard.helpers({
     themes: function(){
         return Session.get('themes');
     },
-    files: function(){
-        return Session.get('files');
+    files: function(type){
+        var files = Session.get('files');
+        var filesMap = {};
+        if (files) {
+            files.forEach(function(item){
+                if (!filesMap[item.type]) {
+                    filesMap[item.type] = [];
+                }
+                filesMap[item.type].push(item);
+            });
+        }
+        return filesMap[type];
     },
-    activeTab: function(){
-        return Session.get('activeTab');
+    currentFile: function() {
+        return {};
     },
     currentTheme: function(){
-        var themesMap = Session.get('themesMap');
-        var key = Session.get('currentThemeKey');
-        if (key === 'C') {
-            Session.set('activeTab', 0);
-        } else if (key === 'B'){
-            Session.set('activeTab', 1);
-        }
-        if (themesMap && key) {
-            return themesMap[key];
-        }
-        return {};
+        return getCurrentTheme();
     }
 });

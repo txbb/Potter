@@ -24,15 +24,15 @@
     ".gitignore"
   ],
   "homepage": "https://github.com/txbb/txbb-pop",
-  "version": "0.2.2",
-  "_release": "0.2.2",
+  "version": "0.3.0",
+  "_release": "0.3.0",
   "_resolution": {
     "type": "version",
-    "tag": "0.2.2",
-    "commit": "d420a88ec573631562ac726d0b301b2688527995"
+    "tag": "0.3.0",
+    "commit": "7a9113a77652a31bf5a89152c55887bfcc0a911b"
   },
   "_source": "git://github.com/txbb/txbb-pop.git",
-  "_target": "~0.2.2",
+  "_target": "~0.3.0",
   "_originalSource": "txbb-pop",
   "_direct": true
 }

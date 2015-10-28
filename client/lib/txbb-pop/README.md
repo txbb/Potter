@@ -1,9 +1,6 @@
 # Txbb.Pop
 同学帮帮弹出层类组件，简洁、无依赖，使用 CSS3 实现动画效果。
 
-## 为什么要再造一遍轮子
-弹出层是常见的业务场景，而且弹出层的业务场景很简单，没必要使用大而全的库，并且，我们经常会有 *层上层* 这种情况，因此笔者写了两个功能， `toast` 及 `modal`。
-
 ## 包含两个业务点
 toast 和 modal
 
@@ -28,3 +25,4 @@ Txbb.Pop('modal', options);
 - cancel: 取消回调
 - okText: 确认按钮文字
 - cancelText: 取消按钮文字
+- dontCloseClickBack: boolean类型，如果不想点击黑色背景关闭窗体，就将该值设为true

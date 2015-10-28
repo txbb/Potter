@@ -1,69 +1,7 @@
 /*jshint esnext:true*/
 
-// 测试号信息
-
-// TODO: 生产号信息
-
-// base64encode, utf16to8, CryptoJS.HmacSHA1, safe64
-function utf16to8(str) {
-    var out, i, len, c;
-    out = "";
-    len = str.length;
-    for (i = 0; i < len; i++) {
-        c = str.charCodeAt(i);
-        if ((c >= 0x0001) && (c <= 0x007F)) {
-            out += str.charAt(i);
-        } else if (c > 0x07FF) {
-            out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
-            out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
-            out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
-        } else {
-            out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
-            out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
-        }
-    }
-    return out;
-}
-var base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-var base64DecodeChars = new Array(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
-    52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-    41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1);
-function base64encode(str) {
-        var out, i, len;
-        var c1, c2, c3;
-        len = str.length;
-        i = 0;
-        out = "";
-        while (i < len) {
-            c1 = str.charCodeAt(i++) & 0xff;
-            if (i == len) {
-                out += base64EncodeChars.charAt(c1 >> 2);
-                out += base64EncodeChars.charAt((c1 & 0x3) << 4);
-                out += "==";
-                break;
-            }
-            c2 = str.charCodeAt(i++);
-            if (i == len) {
-                out += base64EncodeChars.charAt(c1 >> 2);
-                out += base64EncodeChars.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
-                out += base64EncodeChars.charAt((c2 & 0xF) << 2);
-                out += "=";
-                break;
-            }
-            c3 = str.charCodeAt(i++);
-            out += base64EncodeChars.charAt(c1 >> 2);
-            out += base64EncodeChars.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
-            out += base64EncodeChars.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6));
-            out += base64EncodeChars.charAt(c3 & 0x3F);
-        }
-        return out;
-}
-function safe64(base64) {
-    base64 = base64.replace(/\+/g, "-");
-    base64 = base64.replace(/\//g, "_");
-    return base64;
-}
+let qiniu = Npm.require('qiniu');
+let fs = Npm.require('fs');
 
 function getUptDeadline() {
     var now = new Date();
@@ -71,44 +9,116 @@ function getUptDeadline() {
     return Math.floor(time/1000) + 3600;
 }
 
-let qiniu = Npm.require('qiniu');
+function preZero(num) {
+    return num > 9 ? num : '0' + num;
+}
 
+function printTime(time) {
+    var d = new Date();
+    if (time) d.setTime(time);
+    return preZero(parseInt(d.getMonth() + 1)) + '月' + preZero(parseInt(d.getDate())) + '日 ' + preZero(parseInt(d.getHours())) + ':' + preZero(parseInt(d.getMinutes()));
+}
 
+qiniu.conf.ACCESS_KEY = CONFIG.AK;
+qiniu.conf.SECRET_KEY = CONFIG.SK;
+
+// TODO: 超时处理
+function uploadBuf(body, key, callback) {
+    var token = new qiniu.rs.PutPolicy2({
+        scope: CONFIG.BUCKET + ':' + key,
+        expires: getUptDeadline(),
+        returnBody: '{"key": $(key), "domain": "'+ CONFIG.DOMAIN +'"}'
+    });
+    var extra = new qiniu.io.PutExtra();
+    // extra.params = params;
+    // extra.mimeType = mimeType;
+    // extra.crc32 = crc32;
+    // extra.checkCrc = checkCrc;
+
+    qiniu.io.put(token.token(), key, body, extra, function(err, ret) {
+        if (!err) {
+            // 上传成功， 处理返回值
+            callback(null, ret);
+        } else {
+            // 上传失败将结果直接返回前端，前端进行处理
+            // http://developer.qiniu.com/docs/v6/api/reference/codes.html
+            callback(null, err);
+        }
+    });
+}
+
+// 发布文章
+function post(articleText, title, themeId, callback) {
+    var tmpl = Assets.getText('template.html');
+    var html = tmpl.replace(/\{\{content\}\}/g, articleText)
+                   .replace(/\{\{title\}\}/g, title);
+    uploadBuf(html, 'p/' + themeId + '/' + title + '.html', callback);
+}
+
+// 获得主题
+function getThemes(callback) {
+    callback(null, data.themes);
+}
+
+// 处理历史记录
+function handleFiles(data) {
+    var back = [];
+    data.forEach(function(file){
+        var key = file.key;
+        var putTime = printTime(Math.floor(file.putTime/10000));
+        var path = CONFIG.DOMAIN + file.key;
+        var arr = key.split('/');
+        var type = arr[1];
+        var name = arr[2].substring(0, arr[2].indexOf('.html'));
+        back.push({
+            key: key,
+            type: type,
+            name: name,
+            path: path
+        });
+    });
+    return back;
+}
+
+// 获取所有历史记录
+function getFiles(callback) {
+    qiniu.rsf.listPrefix(CONFIG.BUCKET, 'p/', null, 1000, function(err, ret) {
+        if (!err) {
+            callback(null, handleFiles(ret.items));
+        } else {
+            callback(null, err);
+            // http://developer.qiniu.com/docs/v6/api/reference/rs/list.html
+        }
+    });
+}
 
 Meteor.startup(function () {
-    // 生成七牛上传Token
-    const getUpToken = function(accessKey, secretKey, putPolicy) {
-        //SETP 2
-        let put_policy = JSON.stringify(putPolicy);
-
-        //SETP 3
-        let encoded = base64encode(utf16to8(put_policy));
-
-        //SETP 4
-        let hash = CryptoJS.HmacSHA1(encoded, secretKey);
-        let encoded_signed = hash.toString(CryptoJS.enc.Base64);
-
-        //SETP 5
-        let upload_token = accessKey + ":" + safe64(encoded_signed) + ":" + encoded;
-
-        console.log("生成七牛上传Token: ", upload_token);
-
-        return upload_token;
-    };
-
     // Meteor 客户端访问服务端
     Meteor.methods({
-        // TODO: 发布文章
-        post(article){
-
-        },
         // 获得上传token
         getUptToken() {
-            var token = getUpToken(AK, SK, {
-                scope: BUCKET,
-                deadline: getUptDeadline()
+            var token = new qiniu.rs.PutPolicy2({
+                scope: CONFIG.BUCKET,
+                expires: getUptDeadline(),
+                returnBody: '{"key": $(key), "domain": "'+ CONFIG.DOMAIN +'"}'
             });
-            return token;
+            return token.token();
+        },
+        // 发布文章
+        post(articleText, title, path){
+            var syncPost = Meteor.wrapAsync(post);
+            var result = syncPost(articleText, title, path);
+            return result;
+        },
+        // 获取所有主题
+        getThemes() {
+            var funcSync = Meteor.wrapAsync(getThemes);
+            return funcSync();
+        },
+        // 获取所有文章列表
+        getFiles() {
+            var getFilesSync = Meteor.wrapAsync(getFiles);
+            return getFilesSync();
         }
     });
 });

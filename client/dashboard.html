@@ -11,33 +11,22 @@
         <div class="workspace">
             <div class="left">
                 <div class="section">
-                    <ul class="nav-tabs">
-                        <li class="{{#if equals activeTab 0}}active{{/if}}">
-                            <a data-index="0" href="javascript:;">C端</a>
-                        </li>
-                        <li class="{{#if equals activeTab 1}}active{{/if}}">
-                            <a data-index="1" href="javascript:;">B端</a>
-                        </li>
-                    </ul>
-                    <div class="tabs-ctn">
-                        <div class="item {{#if equals activeTab 0}}active{{/if}}">
-                            <ul class="page-list">
-                                {{#each files.C}}
+                    <div class="tree-view">
+                        <h1 class="title">历史发布</h1>
+                        {{#each themes}}
+                        <div class="item on">
+                            <div class="trigger">{{name}}</div>
+                            {{#each files id}}
+                            <ul>
                                 <li>
-                                    <a href="{{url}}">{{name}}</a>
+                                    <a href="{{path}}">
+                                        {{name}}
+                                    </a>
                                 </li>
-                                {{/each}}
                             </ul>
+                            {{/each}}
                         </div>
-                        <div class="item {{#if equals activeTab 1}}active{{/if}}" >
-                            <ul class="page-list">
-                                {{#each files.B}}
-                                <li>
-                                    <a href="{{url}}">{{name}}</a>
-                                </li>
-                                {{/each}}
-                            </ul>
-                        </div>
+                        {{/each}}
                     </div>
                 </div>
             </div>
@@ -48,13 +37,13 @@
                             主题：
                             <select id="ThemeSelect">
                                 {{#each themes}}
-                                <option value="{{key}}">{{name}}</option>
+                                <option value="{{id}}">{{name}}</option>
                                 {{/each}}
                             </select>
                         </span>
                         <span class="item right">
-                            <button>预览</button>
-                            <button>发布</button>
+                            <!-- <button>预览</button> -->
+                            <button id="BtnSend">发布</button>
                         </span>
                     </div>
 
@@ -85,9 +74,9 @@
                                 <div class="subpanel">
                                     <div class="colors">
                                         {{#with currentTheme}}
-                                        <div class="color-item j-opt" data-type="setcolor" data-role="secondary" style="background-color:{{secondary}}"></div>
-                                        <div class="color-item j-opt" data-type="setcolor" data-role="danger" style="background-color:{{danger}}"></div>
-                                        <div class="color-item j-opt" data-type="setcolor" data-role="success" style="background-color:{{success}}"></div>
+                                        <div class="color-item j-opt" data-type="setcolor" data-role="secondary" style="background-color:{{colors.secondary}}"></div>
+                                        <div class="color-item j-opt" data-type="setcolor" data-role="danger" style="background-color:{{colors.danger}}"></div>
+                                        <div class="color-item j-opt" data-type="setcolor" data-role="success" style="background-color:{{colors.success}}"></div>
                                         {{/with}}
                                     </div>
                                 </div>
@@ -126,7 +115,7 @@
                     </div>
 
                     <div class="editor">
-                        <div class="article theme-{{currentTheme.key}}">
+                        <div class="article theme-{{currentTheme.id}}">
 
                         </div>
                     </div>
@@ -139,18 +128,26 @@
                     当前，帮帮产品的每次迭代中，均会有一些说明页的编写需求，诸如各种问答页、表格说明页、联系我们页面等，Potter 致力于解决一个问题，那就是产品经理可以直接编辑想要的文档页并以静态HTML文件的形式发布并且这些文档页是遵循团队视觉规范的，这样就解放了设计师和前端开发的生产力，同时也降低了说明页的维护成本
                     <br><br>
 
-                    功能需求<br>
+                    功能:<br>
                     <ol>
                         <li>一个所见即所得编辑器</li>
-                        <li>主题风格定制（C端视觉和B端视觉）</li>
+                        <li>主题风格定制</li>
                         <li>插入QA块、表格、章节、链接，不支持自定义字体大小，仅支持特定的几种颜色</li>
-                        <li>生成静态HTML文件，并发布至特定的工作路径（一般是线上的文件服务器）</li>
+                        <li>生成静态HTML文件，并发布至七牛</li>
                         <li>修改历史发布过的文件</li>
-                        <li>草稿功能</li>
                         <li>图片上传及插入功能</li>
+                    </ol>
+                    <br>
+                    待开发:<br>
+                    <ol>
+                        <li>草稿功能</li>
+                        <li>登录认证</li>
                     </ol>
                 </div>
             </div>
         </div>
     </div>
+    <!-- <div id="Loading" class="loading">
+        <div class="inner">正在上传图片</div>
+    </div> -->
 </template>
