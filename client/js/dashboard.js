@@ -20,14 +20,20 @@ function init() {
 }
 
 // 新建页面
-function newPage() {
-    domEditor.children[0].innerHTML = '<div class="article-header"> \
-        <div contenteditable>在此处编辑页面标题</div> \
-        </div> \
-        <div class="article-content"> \
-        </div>';
+function newPage(text) {
+    if (typeof text === 'string') {
+        domEditor.children[0].innerHTML = text;
+        $(domEditor.children[0]).find('.j-ctn').attr('contenteditable', true);
+    } else {
+        domEditor.children[0].innerHTML = '<div class="article-header"> \
+            <div contenteditable class="j-ctn">在此处编辑页面标题</div> \
+            </div> \
+            <div class="article-content"> \
+            </div>';
+    }
     domArticleContent = domEditor.children[0].children[1];
     domArticleContent.style.height = parseInt(domArticleContent.parentNode.offsetHeight - domArticleContent.parentNode.children[0].offsetHeight) + 'px';
+    domEditArea.classList.add('on');
     eventBind();
 }
 
@@ -110,6 +116,7 @@ function eventBind() {
         var rowNo = p.data('value');
         var cellNo = tar.data('value');
         insertTable(rowNo, cellNo);
+        tar.parents('[data-type=table]').removeClass('active');
     });
     table.on('mouseleave', function(){
         cells.removeClass('active');
@@ -129,7 +136,7 @@ function handleOperation(tar, optName) {
             insertIndexedSection();
             break;
         case 'subpanel':
-            $(tar).parent().parent().children().removeClass('active');
+            $('[data-type=subpanel]').parent().removeClass('active');
             tar.parentNode.classList.toggle('active');
             break;
         case 'setcolor':
@@ -403,6 +410,17 @@ function getFiles() {
     });
 }
 
+// 读取一条历史记录
+function getFile(path, themeId) {
+    Potter.loading('正在获取该页面');
+    $.get(path, function(resp){
+        var ctn = $(resp.substring(resp.indexOf('<div class="article theme-'), resp.lastIndexOf('</div>'))).html();
+        Potter.loadingHide();
+        newPage(ctn);
+        Session.set('currentThemeId', themeId);
+    }, 'html');
+}
+
 // TODO: 自动保存
 function autoSave() {
 
@@ -451,20 +469,12 @@ Template.dashboard.events({
         event.preventDefault();
         event.stopPropagation();
     },
-    'click .nav-tabs li' : function(event, template) {
-        var target = event.target;
-        var index = parseInt(target.dataset.index);
-        Session.set('activeTab', index);
-    },
     'change #ThemeSelect' : function(event, template) {
         var target = event.target;
         var themeId = target.options[target.selectedIndex].value;
         Session.set('currentThemeId', themeId);
     },
-    'click #BtnCreate' : function(event) {
-        domEditArea.classList.add('on');
-        newPage();
-    },
+    'click #BtnCreate' : newPage,
     'click #BtnSend' : function(e){
         e.preventDefault();
 
@@ -478,6 +488,10 @@ Template.dashboard.events({
     'click .tree-view .trigger': function(e) {
         e.preventDefault();
         e.target.parentNode.classList.toggle('on');
+    },
+    'click .tree-view a': function(e) {
+        e.preventDefault();
+        getFile(this.path, this.type);
     }
 });
 
@@ -501,9 +515,6 @@ Template.dashboard.helpers({
             });
         }
         return filesMap[type];
-    },
-    currentFile: function() {
-        return {};
     },
     currentTheme: function(){
         return getCurrentTheme();

@@ -74,7 +74,8 @@ function handleFiles(data) {
             key: key,
             type: type,
             name: name,
-            path: path
+            path: path,
+            putTime: putTime
         });
     });
     return back;
