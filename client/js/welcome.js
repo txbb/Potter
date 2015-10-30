@@ -9,7 +9,9 @@ Template.welcome.events({
         var password = $('form').find('input[name=password]').val();
         Potter.loading('正在登录...');
         Meteor.call('login', account, password, function(err, ret) {
-            if (ret.error) {
+            if (err) {
+                Txbb.Pop('toast', err);
+            } else if (ret.error) {
                 Txbb.Pop('toast', ret.error);
             } else {
                 localStorage.setItem('user', JSON.stringify(ret.user));

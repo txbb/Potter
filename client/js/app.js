@@ -50,3 +50,13 @@ Template.registerHelper('equals', function (a, b) {
 Template.registerHelper('currentUser', function (a, b) {
     return Session.get('user');
 });
+
+Tracker.autorun(function () {
+    var serverStatus = Meteor.status();
+    if (!serverStatus.connected && serverStatus.retryCount > 0) {
+        Txbb.Pop('modal', {
+            title : '提示',
+            body: '与服务器断开，正在重连'
+        });
+    }
+});
