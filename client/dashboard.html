@@ -4,7 +4,12 @@
             <div class="ctn">
                 <h1 class="logo">Potter</h1>
                 <nav>
-                    <ul><li><a id="BtnCreate" href="javascript:;"><i class="fa fa-plus"></i></a></li></ul>
+                    <ul>
+                        <li><a id="BtnCreate" href="javascript:;"><i class="fa fa-plus"></i></a></li>
+                        {{#if currentUser}}
+                        <li><a href="javascript:;"><i class="fa fa-user"></i></a></li>
+                        {{/if}}
+                    </ul>
                 </nav>
             </div>
         </header>

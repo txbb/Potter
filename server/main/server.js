@@ -4,8 +4,8 @@ let qiniu = Npm.require('qiniu');
 let fs = Npm.require('fs');
 
 function getUptDeadline() {
-    var now = new Date();
-    var time = now.getTime();
+    let now = new Date();
+    let time = now.getTime();
     return Math.floor(time/1000) + 3600;
 }
 
@@ -24,12 +24,12 @@ qiniu.conf.SECRET_KEY = CONFIG.SK;
 
 // TODO: 超时处理
 function uploadBuf(body, key, callback) {
-    var token = new qiniu.rs.PutPolicy2({
+    let token = new qiniu.rs.PutPolicy2({
         scope: CONFIG.BUCKET + ':' + key,
         expires: getUptDeadline(),
         returnBody: '{"key": $(key), "domain": "'+ CONFIG.DOMAIN +'"}'
     });
-    var extra = new qiniu.io.PutExtra();
+    let extra = new qiniu.io.PutExtra();
     // extra.params = params;
     // extra.mimeType = mimeType;
     // extra.crc32 = crc32;
@@ -49,8 +49,8 @@ function uploadBuf(body, key, callback) {
 
 // 发布文章
 function post(articleText, title, themeId, callback) {
-    var tmpl = Assets.getText('template.html');
-    var html = tmpl.replace(/\{\{content\}\}/g, articleText)
+    let tmpl = Assets.getText('template.html');
+    let html = tmpl.replace(/\{\{content\}\}/g, articleText)
                    .replace(/\{\{title\}\}/g, title);
     uploadBuf(html, 'p/' + themeId + '/' + title + '.html', callback);
 }
@@ -62,14 +62,14 @@ function getThemes(callback) {
 
 // 处理历史记录
 function handleFiles(data) {
-    var back = [];
+    let back = [];
     data.forEach(function(file){
-        var key = file.key;
-        var putTime = printTime(Math.floor(file.putTime/10000));
-        var path = CONFIG.DOMAIN + file.key;
-        var arr = key.split('/');
-        var type = arr[1];
-        var name = arr[2].substring(0, arr[2].indexOf('.html'));
+        let key = file.key;
+        let putTime = printTime(Math.floor(file.putTime/10000));
+        let path = CONFIG.DOMAIN + file.key;
+        let arr = key.split('/');
+        let type = arr[1];
+        let name = arr[2].substring(0, arr[2].indexOf('.html'));
         back.push({
             key: key,
             type: type,
@@ -96,9 +96,27 @@ function getFiles(callback) {
 Meteor.startup(function () {
     // Meteor 客户端访问服务端
     Meteor.methods({
+        login(account, password) {
+            let back = {
+                error: '账号未找到'
+            };
+            for (let i = 0,l = accounts.length; i<l ;i++) {
+                if (accounts[i].account.toLowerCase() === account.toLowerCase()) {
+                    if (accounts[i].password === password) {
+                        back.error = 0;
+                        back.user = accounts[i];
+                        this.setUserId(account);
+                    } else {
+                        back.error = '密码错误';
+                    }
+                    break;
+                }
+            }
+            return back;
+        },
         // 获得上传token
         getUptToken() {
-            var token = new qiniu.rs.PutPolicy2({
+            let token = new qiniu.rs.PutPolicy2({
                 scope: CONFIG.BUCKET,
                 expires: getUptDeadline(),
                 returnBody: '{"key": $(key), "domain": "'+ CONFIG.DOMAIN +'"}'
@@ -107,18 +125,18 @@ Meteor.startup(function () {
         },
         // 发布文章
         post(articleText, title, path){
-            var syncPost = Meteor.wrapAsync(post);
-            var result = syncPost(articleText, title, path);
+            let syncPost = Meteor.wrapAsync(post);
+            let result = syncPost(articleText, title, path);
             return result;
         },
         // 获取所有主题
         getThemes() {
-            var funcSync = Meteor.wrapAsync(getThemes);
+            let funcSync = Meteor.wrapAsync(getThemes);
             return funcSync();
         },
         // 获取所有文章列表
         getFiles() {
-            var getFilesSync = Meteor.wrapAsync(getFiles);
+            let getFilesSync = Meteor.wrapAsync(getFiles);
             return getFilesSync();
         }
     });

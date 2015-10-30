@@ -3,10 +3,24 @@
         <div class="welcome-block">
             <div class="logo-wrap">
                 <h1 class="logo">Potter</h1>
-                <p class="desc">简单发布静态说明页面</p>
+                <p class="desc">帮帮静态页发布工具</p>
             </div>
-            <a href="/dashboard" class="btn">开始使用</a>
-            <p>同学帮帮，荣誉出品，使用<a href="http://meteor.com">Meteor</a>编写</p>
+            <form action="/dashboard" class="form">
+                <div class="form-group">
+                    <span class="icon">
+                        <i class="fa fa-user"></i>
+                    </span>
+                    <input type="text" name="account" placeholder="输入账号">
+                </div>
+                <div class="form-group">
+                    <span class="icon">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                    <input type="password" name="password" placeholder="输入密码">
+                </div>
+                <button class="btn">登录</button>
+            </form>
+            <p class="tc"><a href="javascript:;" class="reg">申请一个账号</a></p>
         </div>
     </div>
 </template>

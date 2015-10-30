@@ -1,6 +1,6 @@
 .page-home {
     background: @main url(landing.png) center center no-repeat;
-    background-size: contain;
+    background-size: cover;
 }
 
 .welcome-block {
@@ -10,11 +10,11 @@
     width: 100%;
     left: 0;
     top: 50%;
-    margin-top: -120px;
+    margin-top: -180px;
     opacity: 0;
     transform: translateY(50px);
     .btn {
-        margin-top: 20px;
+        margin-top: 10px;
     }
     &.active {
         opacity: 1;
@@ -22,33 +22,75 @@
         transition: 1s ease;
     }
     & > p {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
         color: @white;
-        margin-top: 40px;
+        margin-top: 20px;
     }
     a {
         color: @white;
-    }
-    a.btn {
-        color: #666;
+        text-decoration: none;
+        &:hover {
+            color: yellow;
+        }
     }
 }
 
 .logo-wrap {
     color: @white;
-    height: 140px;
     width: 320px;
-    margin: 0 auto;
+    margin: 0 auto 30px;
     .logo {
         text-indent: -9999px;
         background: url(logo.svg) center center no-repeat;
-        width: 100%;
-        height: 120px;
+        width: 260px;
+        height: 90px;
+        margin: 0 auto 0;
     }
     .desc {
         font-size: 1.4rem;
-        letter-spacing: 8px;
+        letter-spacing: 4px;
         text-align: center;
-        text-shadow: 2px 2px 0 rgba(0,0,0,.2);
+        text-shadow: 1px 1px 0 rgba(0,0,0,.1);
+    }
+}
+
+.form {
+    width: 240px;
+    margin: 0 auto;
+    .form-group {
+        height: 40px;
+        margin-bottom: 10px;
+        position: relative;
+        width: 100%;
+    }
+    .icon {
+        height: 40px;
+        width: 40px;
+        line-height: 40px;
+        color: #fff;
+        font-size: 20px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        text-shadow: 1px 1px 0 rgba(0,0,0,.2);
+    }
+    input[type=text],
+    input[type=password] {
+        background-color: transparent;
+        height: 40px;
+        line-height: 40px;
+        width: 100%;
+        padding: 10px 0 10px 40px;
+        border-bottom: 1px solid #4997B1;
+        font-size: 1.6rem;
+        font-weight: normal;
+        letter-spacing: 3px;
+        color: #fff;
+        &:focus {
+            border-color: #1582A7;
+        }
+    }
+    ::-webkit-input-placeholder {
+        color: #4997B1;
     }
 }

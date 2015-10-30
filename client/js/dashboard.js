@@ -492,6 +492,13 @@ Template.dashboard.events({
     'click .tree-view a': function(e) {
         e.preventDefault();
         getFile(this.path, this.type);
+    },
+    'dblclick .tree-view a': function(e) {
+        e.preventDefault();
+        Txbb.Pop('modal', {
+            title: '线上地址',
+            body: '<a href="'+ this.path +'">'+ this.path +'</a>'
+        });
     }
 });
 
