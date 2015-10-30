@@ -56,7 +56,8 @@ Tracker.autorun(function () {
     if (!serverStatus.connected && serverStatus.retryCount > 0) {
         Txbb.Pop('modal', {
             title : '提示',
-            body: '与服务器断开，正在重连'
+            body: '与服务器断开，正在重连',
+            dontCloseClickBack: true
         });
     }
 });
