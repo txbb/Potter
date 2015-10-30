@@ -1,4 +1,4 @@
-![](logo.png)
+<img src="logo.png" width="255"/>
 
 # Potter
 帮帮的说明页发布小工具，使用 [Meteor](http://meteor.com) 开发，可以编辑静态 html 页面，提交至七牛云服务器。
